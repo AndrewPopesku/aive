@@ -47,10 +47,10 @@ dev = [
 all = ["aive[moviepy,otio,whisper]"]
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["aive"]
 
 [tool.setuptools.package-dir]
-"" = "src"
+"" = "aive"
 
 [tool.black]
 line-length = 88

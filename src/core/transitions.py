@@ -35,7 +35,7 @@ class Transition(ABC):
         self,
         duration: float,
         name: Optional[str] = None,
-    ):
+    ) -> None:
         """
         Initialize a transition.
         
@@ -79,7 +79,7 @@ class CrossfadeTransition(Transition):
         duration: float,
         curve: str = "linear",
         name: Optional[str] = None,
-    ):
+    ) -> None:
         """
         Initialize a crossfade transition.
         
@@ -175,7 +175,7 @@ class FadeTransition(Transition):
         duration: float,
         fade_color: tuple = (0, 0, 0),  # RGB color to fade to
         name: Optional[str] = None,
-    ):
+    ) -> None:
         """
         Initialize a fade transition.
         
@@ -212,7 +212,7 @@ class SlideTransition(Transition):
         duration: float,
         direction: WipeDirection = WipeDirection.LEFT_TO_RIGHT,
         name: Optional[str] = None,
-    ):
+    ) -> None:
         """
         Initialize a slide transition.
         

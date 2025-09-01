@@ -47,7 +47,7 @@ class Clip(ABC):
         start_time: float = 0.0,
         duration: Optional[float] = None,
         name: Optional[str] = None,
-    ):
+    ) -> None:
         """
         Initialize a clip.
         
@@ -100,7 +100,7 @@ class VideoClip(Clip):
         scale: float = 1.0,
         position: Optional[Position] = None,
         name: Optional[str] = None,
-    ):
+    ) -> None:
         """
         Initialize a video clip.
         
@@ -162,7 +162,7 @@ class AudioClip(Clip):
         trim_end: Optional[float] = None,
         volume: float = 1.0,
         name: Optional[str] = None,
-    ):
+    ) -> None:
         """
         Initialize an audio clip.
         
@@ -225,7 +225,7 @@ class ImageClip(Clip):
         scale: float = 1.0,
         position: Optional[Position] = None,
         name: Optional[str] = None,
-    ):
+    ) -> None:
         """
         Initialize an image clip.
         
@@ -278,7 +278,7 @@ class TextClip(Clip):
         position: Optional[Position] = None,
         size: Optional[Size] = None,
         name: Optional[str] = None,
-    ):
+    ) -> None:
         """
         Initialize a text clip.
         

@@ -10,23 +10,23 @@ This example demonstrates the core functionality of Aive:
 """
 
 from pathlib import Path
-import aive
+import src
 
 def main():
     print("🎬 Aive Basic Usage Example")
     print("=" * 40)
     
     # Create a timeline with standard HD resolution
-    timeline = aive.Timeline.create_standard_hd("Basic Example")
+    timeline = src.Timeline.create_standard_hd("Basic Example")
     
     print(f"Created timeline: {timeline}")
     
     # Add a video track
-    video_track = timeline.add_track(track_type=aive.TrackType.VIDEO)
+    video_track = timeline.add_track(track_type=src.TrackType.VIDEO)
     video_track.name = "Main Video"
     
     # Add a text track
-    text_track = timeline.add_track(track_type=aive.TrackType.TEXT)
+    text_track = timeline.add_track(track_type=src.TrackType.TEXT)
     text_track.name = "Titles"
     
     print(f"Added {len(timeline.tracks)} tracks")
@@ -34,50 +34,50 @@ def main():
     # Create some clips (using placeholder paths - replace with real files)
     
     # Opening title
-    opening_title = aive.TextClip(
+    opening_title = src.TextClip(
         text="Welcome to Aive!",
         duration=3.0,
         start_time=0.0,
         font_size=64,
         font_family="Arial",
-        color=aive.Color(255, 255, 255),  # White
-        position=aive.Position(x=960, y=200),  # Centered horizontally
+        color=src.Color(255, 255, 255),  # White
+        position=src.Position(x=960, y=200),  # Centered horizontally
         name="Opening Title"
     ).set_bold(True).set_alignment("center")
     
     text_track.add_clip(opening_title)
     
     # Main content title
-    main_title = aive.TextClip(
+    main_title = src.TextClip(
         text="Creating Amazing Videos with Python",
         duration=5.0,
         start_time=4.0,
         font_size=48,
-        color=aive.Color(255, 255, 0),  # Yellow
-        position=aive.Position(x=100, y=100),
+        color=src.Color(255, 255, 0),  # Yellow
+        position=src.Position(x=100, y=100),
         name="Main Title"
     )
     
     text_track.add_clip(main_title)
     
     # Subtitle
-    subtitle = aive.TextClip(
+    subtitle = src.TextClip(
         text="Powered by Aive Library",
         duration=4.0,
         start_time=5.0,
         font_size=24,
-        color=aive.Color(200, 200, 200),  # Light gray
-        position=aive.Position(x=100, y=900),
+        color=src.Color(200, 200, 200),  # Light gray
+        position=src.Position(x=100, y=900),
         name="Subtitle"
     )
     
     text_track.add_clip(subtitle)
     
     # Add transitions between text clips
-    crossfade = aive.CrossfadeTransition(duration=0.5, curve="ease_in_out")
+    crossfade = src.CrossfadeTransition(duration=0.5, curve="ease_in_out")
     text_track.add_transition(clip_index=0, transition=crossfade)
     
-    fade_out = aive.FadeTransition(duration=1.0, fade_color=(0, 0, 0))
+    fade_out = src.FadeTransition(duration=1.0, fade_color=(0, 0, 0))
     text_track.add_transition(clip_index=1, transition=fade_out)
     
     print(f"Added {len(text_track.clips)} text clips with transitions")
@@ -123,7 +123,7 @@ def main():
     # Try to render (will only work if MoviePy is installed)
     try:
         print("\n🎥 Attempting to render...")
-        automator = aive.VideoAutomator()
+        automator = src.VideoAutomator()
         
         if automator.renderer:
             output_path = "basic_example_output.mp4"
@@ -138,7 +138,7 @@ def main():
     
     # Show available adapters
     print("\n🔧 Available Adapters:")
-    automator = aive.VideoAutomator()
+    automator = src.VideoAutomator()
     adapters = automator.get_available_adapters()
     for name, available in adapters.items():
         status = "✅" if available else "❌"

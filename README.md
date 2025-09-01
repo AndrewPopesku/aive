@@ -252,13 +252,13 @@ formatter.write(timeline, "project.aaf")
 Aive follows a **Hexagonal Architecture** (Ports and Adapters) pattern:
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Application   │    │   Core Domain    │    │    Adapters     │
-│                 │◄──►│                  │◄──►│                 │
-│ • VideoAutomator│    │ • Timeline       │    │ • MoviePyRenderer│
-│ • Quick functions│    │ • Track/Clips    │    │ • OTIOFormatter │
-│ • Templates     │    │ • Transitions    │    │ • GroqWhisper   │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
+┌─────────────────-┐    ┌──────────────────┐    ┌──────────────────┐
+│   Application    │    │   Core Domain    │    │    Adapters      │
+│                  │◄──►│                  │◄──►│                  │
+│ • VideoAutomator │    │ • Timeline       │    │ • MoviePyRenderer│
+│ • Quick functions│    │ • Track/Clips    │    │ • OTIOFormatter  │
+│ • Templates      │    │ • Transitions    │    │ • GroqWhisper    │
+└─────────────────-┘    └──────────────────┘    └──────────────────┘
 ```
 
 This design allows you to:

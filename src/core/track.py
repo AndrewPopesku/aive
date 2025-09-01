@@ -29,7 +29,7 @@ class Track:
         track_type: TrackType = TrackType.COMPOSITE,
         name: Optional[str] = None,
         enabled: bool = True,
-    ):
+    ) -> None:
         """
         Initialize a track.
         

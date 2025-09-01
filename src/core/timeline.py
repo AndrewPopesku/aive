@@ -23,7 +23,7 @@ class Timeline:
         height: int = 1080,
         framerate: float = 30.0,
         name: Optional[str] = None,
-    ):
+    ) -> None:
         """
         Initialize a timeline.
         
@@ -96,7 +96,7 @@ class Timeline:
             try:
                 self._tracks.remove(track)
             except ValueError:
-                pass  # Track not found, ignore
+                pass
         
         return self
     
@@ -232,7 +232,7 @@ class Timeline:
         Returns:
             Self for method chaining
         """
-        # This will be implemented later with proper dependency injection
+        # TODO: This will be implemented later with proper dependency injection
         raise NotImplementedError("Subtitle generation will be implemented in application layer")
     
     def set_property(self, key: str, value: Any) -> None:

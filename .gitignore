@@ -172,3 +172,4 @@ pyrightconfig.json
 
 # other
 PROJECT_STATUS.md
+uv.lock

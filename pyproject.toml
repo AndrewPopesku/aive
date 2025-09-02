@@ -30,6 +30,9 @@ classifiers = [
 dependencies = [
     "typing-extensions>=4.0.0",
     "dataclasses; python_version<'3.7'",
+    "pydantic>=2.0.0",
+    "dataclasses-json>=0.5.0",
+    "moviepy>=1.0.0",
 ]
 
 [project.optional-dependencies]
@@ -46,11 +49,9 @@ dev = [
 ]
 all = ["aive[moviepy,otio,whisper]"]
 
-[tool.setuptools.packages.find]
-where = ["aive"]
-
-[tool.setuptools.package-dir]
-"" = "aive"
+[tool.setuptools]
+packages = ["aive"]
+package-dir = {aive = "src"}
 
 [tool.black]
 line-length = 88

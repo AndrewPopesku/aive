@@ -11,12 +11,24 @@ from ..core.track import TrackType
 from ..ports.renderer import Renderer, RenderOptions, RenderError
 
 try:
-    import moviepy.editor as mp
-    from moviepy.config import check_config
+    # Try the new MoviePy 2.x import structure first
+    import moviepy as mp
+    # check_config doesn't exist in MoviePy 2.x
+    check_config = None
     MOVIEPY_AVAILABLE = True
 except ImportError:
-    MOVIEPY_AVAILABLE = False
-    mp = None
+    try:
+        # Fallback to older MoviePy 1.x import structure
+        import moviepy.editor as mp
+        try:
+            from moviepy.config import check_config
+        except ImportError:
+            check_config = None
+        MOVIEPY_AVAILABLE = True
+    except ImportError:
+        MOVIEPY_AVAILABLE = False
+        mp = None
+        check_config = None
 
 
 class MoviePyRenderer(Renderer):
@@ -221,9 +233,17 @@ class MoviePyRenderer(Renderer):
             composite_audio = mp.CompositeAudioClip(audio_clips)
             composite_video = composite_video.set_audio(composite_audio)
         
-        # Set duration
-        composite_video = composite_video.set_duration(timeline.duration)
-        composite_video = composite_video.set_fps(timeline.framerate)
+        # Set duration - handle both API versions
+        try:
+            composite_video = composite_video.with_duration(timeline.duration)  # MoviePy 2.x
+        except AttributeError:
+            composite_video = composite_video.set_duration(timeline.duration)  # MoviePy 1.x
+        
+        # Set framerate - handle both API versions
+        try:
+            composite_video = composite_video.with_fps(timeline.framerate)  # MoviePy 2.x
+        except AttributeError:
+            composite_video = composite_video.set_fps(timeline.framerate)  # MoviePy 1.x
         
         return composite_video
     
@@ -272,7 +292,10 @@ class MoviePyRenderer(Renderer):
         
         # Apply duration if specified
         if clip.duration is not None:
-            moviepy_clip = moviepy_clip.set_duration(clip.duration)
+            try:
+                moviepy_clip = moviepy_clip.with_duration(clip.duration)  # MoviePy 2.x
+            except AttributeError:
+                moviepy_clip = moviepy_clip.set_duration(clip.duration)  # MoviePy 1.x
         
         # Apply position and timing
         moviepy_clip = moviepy_clip.set_start(clip.start_time)
@@ -331,8 +354,11 @@ class MoviePyRenderer(Renderer):
         """Convert ImageClip to MoviePy ImageClip."""
         moviepy_clip = mp.ImageClip(str(clip.source_path))
         
-        # Set duration
-        moviepy_clip = moviepy_clip.set_duration(clip.duration)
+        # Set duration - handle both API versions
+        try:
+            moviepy_clip = moviepy_clip.with_duration(clip.duration)  # MoviePy 2.x
+        except AttributeError:
+            moviepy_clip = moviepy_clip.set_duration(clip.duration)  # MoviePy 1.x
         
         # Apply position and timing
         moviepy_clip = moviepy_clip.set_start(clip.start_time)
@@ -352,10 +378,10 @@ class MoviePyRenderer(Renderer):
     
     def _convert_text_clip(self, clip: TextClip) -> 'mp.TextClip':
         """Convert TextClip to MoviePy TextClip."""
-        # Prepare text clip parameters
+        # Prepare text clip parameters - try both API versions
         text_params = {
-            'txt': clip.text,
-            'fontsize': clip.font_size,
+            'text': clip.text,  # MoviePy 2.x uses 'text' instead of 'txt'
+            'font_size': clip.font_size,  # MoviePy 2.x uses 'font_size' instead of 'fontsize'
             'font': clip.font_family,
             'color': clip.color.to_hex(),
         }
@@ -365,14 +391,31 @@ class MoviePyRenderer(Renderer):
             text_params['method'] = 'caption'
             text_params['align'] = 'center'
         
-        moviepy_clip = mp.TextClip(**text_params)
+        try:
+            moviepy_clip = mp.TextClip(**text_params)
+        except TypeError:
+            # Fallback to old API if new one fails
+            text_params['txt'] = text_params.pop('text')
+            text_params['fontsize'] = text_params.pop('font_size')
+            moviepy_clip = mp.TextClip(**text_params)
         
-        # Set duration
-        moviepy_clip = moviepy_clip.set_duration(clip.duration)
+        # Set duration - handle both API versions
+        try:
+            moviepy_clip = moviepy_clip.with_duration(clip.duration)  # MoviePy 2.x
+        except AttributeError:
+            moviepy_clip = moviepy_clip.set_duration(clip.duration)  # MoviePy 1.x
         
-        # Apply position and timing
-        moviepy_clip = moviepy_clip.set_start(clip.start_time)
-        moviepy_clip = moviepy_clip.set_position((clip.position.x, clip.position.y))
+        # Apply position and timing - handle both API versions for TextClip
+        try:
+            moviepy_clip = moviepy_clip.with_start(clip.start_time)  # MoviePy 2.x
+        except AttributeError:
+            moviepy_clip = moviepy_clip.set_start(clip.start_time)  # MoviePy 1.x
+        
+        # Apply position - handle both API versions
+        try:
+            moviepy_clip = moviepy_clip.with_position((clip.position.x, clip.position.y))  # MoviePy 2.x
+        except AttributeError:
+            moviepy_clip = moviepy_clip.set_position((clip.position.x, clip.position.y))  # MoviePy 1.x
         
         # Apply opacity
         if clip.opacity != 1.0:
@@ -415,12 +458,8 @@ class MoviePyRenderer(Renderer):
         if options.threads:
             params['threads'] = options.threads
         
-        # Verbose output
-        params['verbose'] = options.verbose
-        
-        # Logger
-        if options.logger:
-            params['logger'] = options.logger
+        # Note: 'verbose' and 'logger' parameters don't exist in MoviePy 2.x
+        # They were part of the older API
         
         return params
     
@@ -435,12 +474,16 @@ class MoviePyRenderer(Renderer):
     
     def _check_moviepy_setup(self) -> None:
         """Check MoviePy setup and dependencies."""
-        try:
-            # This will check for ffmpeg and other dependencies
-            check_config()
-        except Exception as e:
-            print(f"Warning: MoviePy configuration issue: {e}")
-            print("Some features may not work correctly.")
+        if check_config is not None:
+            try:
+                # This will check for ffmpeg and other dependencies
+                check_config()
+            except Exception as e:
+                print(f"Warning: MoviePy configuration issue: {e}")
+                print("Some features may not work correctly.")
+        else:
+            # MoviePy 2.x doesn't have check_config, assume it's OK
+            pass
     
     @staticmethod
     def is_available() -> bool:
